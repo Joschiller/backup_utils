@@ -99,8 +99,9 @@ if [ $command == "init" ]; then
   else
     touch "$fileName"
     if [[ $runUpdate == 1 || $runUpdate == -1 ]]; then
-      echo -e "cd backup_utils\ngit pull\ncd ..\n" >> "$fileName"
+      echo -e "echo ---------- PULLING BACKUP_UTILS ----------\ncd backup_utils\ngit pull\ncd ..\n" >> "$fileName"
     fi
+    echo "echo ----------    RUNNING BACKUP    ----------" >> "$fileName"
   fi
   printScript
 fi
@@ -110,19 +111,19 @@ if [ $command == "config" ]; then
 
   firstLine=$(head -n 1 "$fileName")
   if [ $runUpdate == 0 ]; then
-    if [[ $firstLine == "cd backup_utils" ]]; then
+    if [[ $firstLine == "echo ---------- PULLING BACKUP_UTILS ----------" ]]; then
       echo "REMOVING PULL"
-      sed -i -e '1,4d' "$fileName"
+      sed -i -e '1,5d' "$fileName"
     else
       echo "PULL ALREADY REMOVED"
     fi
   fi
   if [ $runUpdate == 1 ]; then
-    if [[ $firstLine == "cd backup_utils" ]]; then
+    if [[ $firstLine == "echo ---------- PULLING BACKUP_UTILS ----------" ]]; then
       echo "PULL ALREADY ADDED"
     else
       echo "ADDING PULL"
-      echo -e "cd backup_utils\ngit pull\ncd ..\n\n$(cat "$fileName")" > "$fileName"
+      echo -e "echo ---------- PULLING BACKUP_UTILS ----------\ncd backup_utils\ngit pull\ncd ..\n\n$(cat "$fileName")" > "$fileName"
     fi
   fi
 
