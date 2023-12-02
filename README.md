@@ -2,6 +2,27 @@
 
 This repository contains helper scripts for backup tasks.
 
+## `./backupSetup.sh`
+
+> **To use this script, a local clone of tis repository must exist next to where the backup script should be initialized!**
+>
+> If a backup script should be initialized at a location `./backup.sh`, the clone of this repository must be located at `./backup_utils`.
+
+Using this script, a local backup directory structure can be created. This directory structure is set up to use the `./backupRepositories.sh` script below.
+
+The script can be run with the following options:
+
+> `./backupSetup.sh <-i | -c> <file-name> [<option> <value> ...]`
+
+| Option                      | Explanation                                                                                                                                                                   |
+| :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-i <file-name>`            | initializes a local backup script (if not provided, the file extension `.sh` will be added to the file name) - accepts the further option `-u`                                |
+| `-c <file-name>`            | changes the configuration within the local backup script (if not provided, the file extension `.sh` will be added to the file name) - expects the further option `-u` or `-a` |
+| `-u <0 \| 1>`               | enables (`1`) or disables (`0`) the git pull on the `backup_utils` that may be performed before running the backup script                                                     |
+| `-a <relative-folder-path>` | overhand a directory name that shall be initialized for a backup                                                                                                              |
+
+> After configuring the backup script, the backup can be run by simply executing the script.
+
 ## `./backupRepositories.sh`
 
 > **To use this script, Git must be installed locally!**
