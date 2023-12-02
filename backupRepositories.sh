@@ -20,10 +20,34 @@ backupPath="./"
 while getopts "r:v:c:d:" opt
 do
   case "$opt" in
-    r) command="$OPTARG" ;;
-    v) commandValue="$OPTARG" ;;
-    c) configFile="$OPTARG" ;;
-    d) backupPath="$OPTARG" ;;
+    r)
+      if [ -z $command ]; then
+        command="$OPTARG"
+      else
+        echo "CONFLICTING OPTIONS FOR -r"
+        helpFunction
+      fi ;;
+    v)
+      if [ -z $commandValue ]; then
+        commandValue="$OPTARG"
+      else
+        echo "CONFLICTING OPTIONS FOR -v"
+        helpFunction
+      fi ;;
+    c)
+      if [ -z $configFile ]; then
+        configFile="$OPTARG"
+      else
+        echo "CONFLICTING OPTIONS FOR -c"
+        helpFunction
+      fi ;;
+    d)
+      if [ -z $backupPath ]; then
+        backupPath="$OPTARG"
+      else
+        echo "CONFLICTING OPTIONS FOR -d"
+        helpFunction
+      fi ;;
     ?) helpFunction ;;
   esac
 done
