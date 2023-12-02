@@ -47,3 +47,46 @@ The script can be run with the following commands and options:
 | :-------------------------- | :---------------------------------------------------------------------------------- |
 | `-c <relative-file-path>`   | overhand a different config file relative to the current working directory          |
 | `-d <relative-folder-path>` | overhand a different target backup folder relative to the current working directory |
+
+## Example Setup for These Scripts
+
+In the following example, a directory structure is given, where the backups should be stored as follows:
+
+```
+./
+|-- backup_utils/
+    |-- backupRepositories.sh
+    \-- backupSetup.sh
+|-- firstRepositoryBackup/
+    |-- someRepository/
+        \-- ... some files within the repository ...
+    \-- backup.config
+|-- secondRepositoryBackup/
+    |-- someRepository/
+        \-- ... some files within the repository ...
+    \-- backup.config
+\-- backup.sh
+```
+
+Using `./backup_utils/backupSetup.sh` the configuration of this backup structure could be created as follows:
+
+```sh
+# 1. create local clone of the backup_utils
+git clone https://github.com/Joschiller/backup_utils
+
+# 2. init
+./backup_utils/backupSetup.sh -i backup
+# to disable the automatic pull on the backup_utils, add `-u 0` at the end
+
+# 3. setup directories
+./backup_utils/backupSetup.sh -c backup -a ./firstRepositoryBackup
+
+./backup_utils/backupSetup.sh -c backup -a ./secondRepositoryBackup
+
+# 4. add repositories to backup
+./backup_utils/backupRepositories.sh -r add -v https://firstDomain.com/.../someRepository -c ./firstRepositoryBackup/backup.config
+
+./backup_utils/backupRepositories.sh -r add -v https://secondDomain.com/.../someRepository -c ./secondRepositoryBackup/backup.config
+```
+
+To run the backup, `./backup.sh` can then be executed.
