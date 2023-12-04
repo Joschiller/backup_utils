@@ -5,7 +5,7 @@ helpFunction()
   echo ""
   echo "usage: $0 <-i | -c> <file-name>"
   echo "          [-u <0 | 1>]"
-  echo "          [-a <relative-folder-path>]"
+  echo "          [-a <relative-folder-path> <-r | -d [-k]>]"
   exit 1
 }
 
@@ -15,6 +15,8 @@ command=""
 fileName=""
 runUpdate=-1
 addFolder=""
+addFolderMode=""
+keepExisting=0
 
 printScript()
 {
@@ -23,7 +25,7 @@ printScript()
 }
 
 # read options
-while getopts "i:c:u:a:" opt
+while getopts "i:c:u:a:rdk" opt
 do
   case "$opt" in
     i)
@@ -66,6 +68,21 @@ do
         echo "CONFLICTING OPTIONS FOR -a"
         helpFunction
       fi ;;
+    r)
+      if [ -z $addFolderMode ]; then
+        addFolderMode="repository"
+      else
+        echo "CONFLICTING OPTIONS: -r AND -d"
+        helpFunction
+      fi ;;
+    d)
+      if [ -z $addFolderMode ]; then
+        addFolderMode="directory"
+      else
+        echo "CONFLICTING OPTIONS: -r AND -d"
+        helpFunction
+      fi ;;
+    k) keepExisting=1 ;;
     ?) helpFunction ;;
   esac
 done
@@ -83,6 +100,16 @@ fi
 
 if [[ "$command" == "config" && $runUpdate == -1 && -z $addFolder ]]; then
   echo "MISSING OPTION: -u <0 | 1> | -a <relative-folder-path>"
+  helpFunction
+fi
+
+if [[ ! -z "$addFolder" && -z "$addFolderMode" ]]; then
+  echo "MISSING OPTION: -r | -d"
+  helpFunction
+fi
+
+if [[ "$addFolderMode" == "repository" && $keepExisting == 1 ]]; then
+  echo "CONFLICTING OPTIONS: -r AND -k"
   helpFunction
 fi
 
@@ -128,18 +155,37 @@ if [ $command == "config" ]; then
   fi
 
   if [[ ! -z $addFolder ]]; then
-    echo "ADDING $addFolder"
-    configLine="./backup_utils/backupRepositories.sh -r backup -c ${addFolder}/backup.config -d ${addFolder}"
-    if grep -q -F "$configLine" "$fileName"; then
-      echo "$fileName ALREADY CONTAINS $addFolder"
-    else
-      echo "$configLine" >> "$fileName"
-      mkdir -p "$addFolder"
-      if [ ! -f "${addFolder}/backup.config" ]; then
-        cd "$addFolder"
-        touch "backup.config"
-        cd $basePath
+    configLineRepository="./backup_utils/backupRepositories.sh -r backup -c ${addFolder}/backup.config -d ${addFolder}"
+    configLineDirectory="./backup_utils/backupFromLocalPath.sh -r backup -c ${addFolder}/backup.config -d ${addFolder}"
+    configLineDirectoryKeepExisting="./backup_utils/backupFromLocalPath.sh -r backup -c ${addFolder}/backup.config -d ${addFolder} -k"
+
+    added=0
+    if ! grep -q -F "$configLineRepository" "$fileName"; then
+      if ! grep -q -F "$configLineDirectory" "$fileName"; then
+        if ! grep -q -F "$configLineDirectoryKeepExisting" "$fileName"; then
+          added=1
+          echo "ADDING $addFolder"
+          if [[ "$addFolderMode" == "repository" ]]; then
+            echo "$configLineRepository" >> "$fileName"
+          fi
+          if [[ "$addFolderMode" == "directory" ]]; then
+            if [[ $keepExisting == 1 ]]; then
+              echo "$configLineDirectoryKeepExisting" >> "$fileName"
+            else
+              echo "$configLineDirectory" >> "$fileName"
+            fi
+          fi
+          mkdir -p "$addFolder"
+          if [ ! -f "${addFolder}/backup.config" ]; then
+            cd "$addFolder"
+            touch "backup.config"
+            cd $basePath
+          fi
+        fi
       fi
+    fi
+    if [ $added == 0 ]; then
+      echo "$fileName ALREADY CONTAINS $addFolder"
     fi
   fi
 

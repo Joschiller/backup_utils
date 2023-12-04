@@ -8,7 +8,7 @@ This repository contains helper scripts for backup tasks.
 >
 > If a backup script should be initialized at a location `./backup.sh`, the clone of this repository must be located at `./backup_utils`.
 
-Using this script, a local backup directory structure can be created. This directory structure is set up to use the `./backupRepositories.sh` script below.
+Using this script, a local backup directory structure can be created. This directory structure is set up to use the `./backupRepositories.sh` and `./backupFromLocalPath.sh` script below.
 
 The script can be run with the following options:
 
@@ -19,7 +19,10 @@ The script can be run with the following options:
 | `-i <file-name>`            | initializes a local backup script (if not provided, the file extension `.sh` will be added to the file name) - accepts the further option `-u`                                |
 | `-c <file-name>`            | changes the configuration within the local backup script (if not provided, the file extension `.sh` will be added to the file name) - expects the further option `-u` or `-a` |
 | `-u <0 \| 1>`               | enables (`1`) or disables (`0`) the git pull on the `backup_utils` that may be performed before running the backup script                                                     |
-| `-a <relative-folder-path>` | overhand a directory name that shall be initialized for a backup                                                                                                              |
+| `-a <relative-folder-path>` | overhand a directory name that shall be initialized for a backup - expects the further option `-r` or `-d`                                                                    |
+| `-r`                        | the newly added folder will be setup as a backup folder for repositories                                                                                                      |
+| `-d`                        | the newly added folder will be setup as a backup folder for local directories - accepts the further option `-k`                                                               |
+| `-k`                        | the newly added folder will be setup in such a way that existing files will never be overwritten by new changes to the source folder of the backup                            |
 
 > After configuring the backup script, the backup can be run by simply executing the script.
 
@@ -79,8 +82,17 @@ In the following example, a directory structure is given, where the backups shou
 ```
 ./
 |-- backup_utils/
+    |-- backupFromLocalPath.sh
     |-- backupRepositories.sh
     \-- backupSetup.sh
+|-- filesFromLocalPathBackup/
+    |-- someFolder/
+        \-- ... some files within the folder ...
+    \-- backup.config
+|-- filesFromLocalPathThatShouldNeverBeOverwrittenBackup/
+    |-- someFolder/
+        \-- ... some files within the folder ...
+    \-- backup.config
 |-- firstRepositoryBackup/
     |-- someRepository/
         \-- ... some files within the repository ...
@@ -103,11 +115,19 @@ git clone https://github.com/Joschiller/backup_utils
 # to disable the automatic pull on the backup_utils, add `-u 0` at the end
 
 # 3. setup directories
-./backup_utils/backupSetup.sh -c backup -a ./firstRepositoryBackup
+./backup_utils/backupSetup.sh -c backup -a ./filesFromLocalPathBackup -d
 
-./backup_utils/backupSetup.sh -c backup -a ./secondRepositoryBackup
+./backup_utils/backupSetup.sh -c backup -a ./filesFromLocalPathThatShouldNeverBeOverwrittenBackup -d -k
 
-# 4. add repositories to backup
+./backup_utils/backupSetup.sh -c backup -a ./firstRepositoryBackup -r
+
+./backup_utils/backupSetup.sh -c backup -a ./secondRepositoryBackup -r
+
+# 4. add repositories and directories to backup
+./backup_utils/backupFromLocalPath.sh -r add -v /c/Users/.../Documents/someFolder -c ./filesFromLocalPathBackup/backup.config
+
+./backup_utils/backupFromLocalPath.sh -r add -v /c/Users/.../Videos/someFolder -c ./filesFromLocalPathThatShouldNeverBeOverwrittenBackup/backup.config
+
 ./backup_utils/backupRepositories.sh -r add -v https://firstDomain.com/.../someRepository -c ./firstRepositoryBackup/backup.config
 
 ./backup_utils/backupRepositories.sh -r add -v https://secondDomain.com/.../someRepository -c ./secondRepositoryBackup/backup.config
