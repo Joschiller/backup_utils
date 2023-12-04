@@ -13,18 +13,42 @@ helpFunction()
 basePath="$(pwd)"
 command=""
 commandValue=""
-configFile="./backupFromLocalPath.config"
-backupPath="./"
+configFile=""
+backupPath=""
 ignoreExistingFiles=0
 
 # read options
 while getopts "r:v:c:d:k" opt
 do
   case "$opt" in
-    r) command="$OPTARG" ;;
-    v) commandValue="$OPTARG" ;;
-    c) configFile="$OPTARG" ;;
-    d) backupPath="$OPTARG" ;;
+    r)
+      if [ -z $command ]; then
+        command="$OPTARG"
+      else
+        echo "CONFLICTING OPTIONS FOR -r"
+        helpFunction
+      fi ;;
+    v)
+      if [ -z $commandValue ]; then
+        commandValue="$OPTARG"
+      else
+        echo "CONFLICTING OPTIONS FOR -v"
+        helpFunction
+      fi ;;
+    c)
+      if [ -z $configFile ]; then
+        configFile="$OPTARG"
+      else
+        echo "CONFLICTING OPTIONS FOR -c"
+        helpFunction
+      fi ;;
+    d)
+      if [ -z $backupPath ]; then
+        backupPath="$OPTARG"
+      else
+        echo "CONFLICTING OPTIONS FOR -d"
+        helpFunction
+      fi ;;
     k) ignoreExistingFiles=1 ;;
     ?) helpFunction ;;
   esac
@@ -42,12 +66,10 @@ if [[ ("$command" == "add" || "$command" == "remove") && -z "$commandValue" ]]; 
 fi
 
 if [ -z "$configFile" ]; then
-  echo "MISSING VALUE: relative-file-path"
-  helpFunction
+  configFile="./backupFromLocalPath.config"
 fi
 if [ -z "$backupPath" ]; then
-  echo "MISSING VALUE: relative-folder-path"
-  helpFunction
+  backupPath="./"
 fi
 
 if [ ! -f "$configFile" ]; then

@@ -13,8 +13,8 @@ helpFunction()
 basePath="$(pwd)"
 command=""
 commandValue=""
-configFile="./backupRepositories.config"
-backupPath="./"
+configFile=""
+backupPath=""
 
 # read options
 while getopts "r:v:c:d:" opt
@@ -64,12 +64,10 @@ if [[ ("$command" == "add" || "$command" == "remove") && -z "$commandValue" ]]; 
 fi
 
 if [ -z "$configFile" ]; then
-  echo "MISSING VALUE: relative-file-path"
-  helpFunction
+  configFile="./backupRepositories.config"
 fi
 if [ -z "$backupPath" ]; then
-  echo "MISSING VALUE: relative-folder-path"
-  helpFunction
+  backupPath="./"
 fi
 
 if [ ! -f "$configFile" ]; then
