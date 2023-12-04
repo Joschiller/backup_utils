@@ -48,6 +48,30 @@ The script can be run with the following commands and options:
 | `-c <relative-file-path>`   | overhand a different config file relative to the current working directory          |
 | `-d <relative-folder-path>` | overhand a different target backup folder relative to the current working directory |
 
+## `./backupFromLocalPath.sh`
+
+This script runs the backup for local files given in a `.config` file by copying them to a local location. By default, a config file with the name `backupFromLocalPath.config` will be used that is contained in the current working directory. The backup folders will also be put in the same folder.
+
+The config file must contain a list of directory paths that will be copied. The other directory, that should be backed up, must contain a file named `.backupable`.
+
+> Be aware, that, if a folder with the same name already exists in the backup target location, its contents will be discarded and replaced with the newly copied contents. Meaning: folder names cannot occur several times within the same target backup folder!
+
+The script can be run with the following commands and options:
+
+> `./backupFromLocalPath.sh -r <command> [-v <value>] [<option> <value> ...]`
+
+| Command  | Expected Value  | Explanation                                                                                                |
+| :------- | :-------------- | :--------------------------------------------------------------------------------------------------------- |
+| `backup` |                 | runs the backup process                                                                                    |
+| `add`    | `<folder-path>` | adds a folder to the `.config` file and creates the `.backupable` file in the folder that should be copied |
+| `remove` | `<folder-path>` | removes a folder from the `.config` file                                                                   |
+
+| Option                      | Explanation                                                                                                                                                                                                                               |
+| :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-c <relative-file-path>`   | overhand a different config file relative to the current working directory                                                                                                                                                                |
+| `-d <relative-folder-path>` | overhand a different target backup folder relative to the current working directory                                                                                                                                                       |
+| `-k`                        | keep existing files in the backup without overwriting them with newly copied files, even if their last modified timestamp is newer than the existing file - by default, the old backup will completely be overwritten with the new values |
+
 ## Example Setup for These Scripts
 
 In the following example, a directory structure is given, where the backups should be stored as follows:
