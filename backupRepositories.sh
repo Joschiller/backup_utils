@@ -17,7 +17,7 @@ configFile=""
 backupPath=""
 
 # read options
-while getopts "r:v:c:d:" opt
+while getopts "r:v:c:d:h" opt
 do
   case "$opt" in
     r)
@@ -48,6 +48,7 @@ do
         echo "CONFLICTING OPTIONS FOR -d"
         helpFunction
       fi ;;
+    h) helpFunction ;;
     ?) helpFunction ;;
   esac
 done

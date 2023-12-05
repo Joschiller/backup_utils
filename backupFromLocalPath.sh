@@ -18,7 +18,7 @@ backupPath=""
 ignoreExistingFiles=0
 
 # read options
-while getopts "r:v:c:d:k" opt
+while getopts "r:v:c:d:kh" opt
 do
   case "$opt" in
     r)
@@ -50,6 +50,7 @@ do
         helpFunction
       fi ;;
     k) ignoreExistingFiles=1 ;;
+    h) helpFunction ;;
     ?) helpFunction ;;
   esac
 done

@@ -25,7 +25,7 @@ printScript()
 }
 
 # read options
-while getopts "i:c:u:a:rdk" opt
+while getopts "i:c:u:a:rdkh" opt
 do
   case "$opt" in
     i)
@@ -83,6 +83,7 @@ do
         helpFunction
       fi ;;
     k) keepExisting=1 ;;
+    h) helpFunction ;;
     ?) helpFunction ;;
   esac
 done
