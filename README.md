@@ -13,16 +13,18 @@ Using this script, a local backup directory structure can be created. This direc
 The script can be run with the following options:
 
 > `./backupSetup.sh <-i | -c> <file-name> [<option> <value> ...]`
+>
+> `./backupSetup.sh <--init | --configure> <file-name> [<option> <value> ...]`
 
-| Option                      | Explanation                                                                                                                                                                   |
-| :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-i <file-name>`            | initializes a local backup script (if not provided, the file extension `.sh` will be added to the file name) - accepts the further option `-u`                                |
-| `-c <file-name>`            | changes the configuration within the local backup script (if not provided, the file extension `.sh` will be added to the file name) - expects the further option `-u` or `-a` |
-| `-u <0 \| 1>`               | enables (`1`) or disables (`0`) the git pull on the `backup_utils` that may be performed before running the backup script                                                     |
-| `-a <relative-folder-path>` | overhand a directory name that shall be initialized for a backup - expects the further option `-r` or `-d`                                                                    |
-| `-r`                        | the newly added folder will be setup as a backup folder for repositories                                                                                                      |
-| `-d`                        | the newly added folder will be setup as a backup folder for local directories - accepts the further option `-k`                                                               |
-| `-k`                        | the newly added folder will be setup in such a way that existing files will never be overwritten by new changes to the source folder of the backup                            |
+| Option                                                         | Explanation                                                                                                                                                                   |
+| :------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-i <file-name>`<br/>`--init <file-name>`                      | initializes a local backup script (if not provided, the file extension `.sh` will be added to the file name) - accepts the further option `-u`                                |
+| `-c <file-name>`<br/>`--configure <file-name>`                 | changes the configuration within the local backup script (if not provided, the file extension `.sh` will be added to the file name) - expects the further option `-u` or `-a` |
+| `-u <0 \| 1>`<br/>`--set-backup-utils-update <0 \| 1>`         | enables (`1`) or disables (`0`) the git pull on the `backup_utils` that may be performed before running the backup script                                                     |
+| `-a <relative-folder-path>`<br/>`--add <relative-folder-path>` | overhand a directory name that shall be initialized for a backup - expects the further option `-r` or `-d`                                                                    |
+| `-r`<br/>`--repository`<br/>`--repo`                           | the newly added folder will be setup as a backup folder for repositories                                                                                                      |
+| `-d`<br/>`--directory`                                         | the newly added folder will be setup as a backup folder for local directories - accepts the further option `-k`                                                               |
+| `-k`<br/>`--ignore-existing-files`                             | the newly added folder will be setup in such a way that existing files will never be overwritten by new changes to the source folder of the backup                            |
 
 > After configuring the backup script, the backup can be run by simply executing the script.
 
@@ -39,6 +41,8 @@ The config file must contain a list of repository URLs that will be cloned or pu
 The script can be run with the following commands and options:
 
 > `./backupRepositories.sh -r <command> [-v <value>] [<option> <value> ...]`
+>
+> `./backupRepositories.sh --run <command> [--value <value>] [<option> <value> ...]`
 
 | Command  | Expected Value     | Explanation                                  |
 | :------- | :----------------- | :------------------------------------------- |
@@ -46,10 +50,10 @@ The script can be run with the following commands and options:
 | `add`    | `<repository-url>` | adds a repository to the `.config` file      |
 | `remove` | `<repository-url>` | removes a repository from the `.config` file |
 
-| Option                      | Explanation                                                                         |
-| :-------------------------- | :---------------------------------------------------------------------------------- |
-| `-c <relative-file-path>`   | overhand a different config file relative to the current working directory          |
-| `-d <relative-folder-path>` | overhand a different target backup folder relative to the current working directory |
+| Option                                                                      | Explanation                                                                         |
+| :-------------------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
+| `-c <relative-file-path>`<br/>`--config-file <relative-file-path>`          | overhand a different config file relative to the current working directory          |
+| `-d <relative-folder-path>`<br/>`--target-directory <relative-folder-path>` | overhand a different target backup folder relative to the current working directory |
 
 ## `./backupFromLocalPath.sh`
 
@@ -62,6 +66,8 @@ The config file must contain a list of directory paths that will be copied. The 
 The script can be run with the following commands and options:
 
 > `./backupFromLocalPath.sh -r <command> [-v <value>] [<option> <value> ...]`
+>
+> `./backupFromLocalPath.sh --run <command> [--value <value>] [<option> <value> ...]`
 
 | Command  | Expected Value  | Explanation                                                                                                |
 | :------- | :-------------- | :--------------------------------------------------------------------------------------------------------- |
@@ -69,11 +75,11 @@ The script can be run with the following commands and options:
 | `add`    | `<folder-path>` | adds a folder to the `.config` file and creates the `.backupable` file in the folder that should be copied |
 | `remove` | `<folder-path>` | removes a folder from the `.config` file                                                                   |
 
-| Option                      | Explanation                                                                                                                                                                                                                               |
-| :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-c <relative-file-path>`   | overhand a different config file relative to the current working directory                                                                                                                                                                |
-| `-d <relative-folder-path>` | overhand a different target backup folder relative to the current working directory                                                                                                                                                       |
-| `-k`                        | keep existing files in the backup without overwriting them with newly copied files, even if their last modified timestamp is newer than the existing file - by default, the old backup will completely be overwritten with the new values |
+| Option                                                                      | Explanation                                                                                                                                                                                                                               |
+| :-------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-c <relative-file-path>`<br/>`--config-file <relative-file-path>`          | overhand a different config file relative to the current working directory                                                                                                                                                                |
+| `-d <relative-folder-path>`<br/>`--target-directory <relative-folder-path>` | overhand a different target backup folder relative to the current working directory                                                                                                                                                       |
+| `-k`<br/>`--ignore-existing-files`                                          | keep existing files in the backup without overwriting them with newly copied files, even if their last modified timestamp is newer than the existing file - by default, the old backup will completely be overwritten with the new values |
 
 ## Example Setup for These Scripts
 

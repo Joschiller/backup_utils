@@ -6,6 +6,12 @@ helpFunction()
   echo "usage: $0 -r <backup | add | remove> [-v <absolute-folder-path>]"
   echo "          [-c <relative-file-path>]"
   echo "          [-d <relative-folder-path>]"
+  echo "          [-k]"
+  echo ""
+  echo "usage: $0 --run <backup | add | remove> [--value <absolute-folder-path>]"
+  echo "          [--config-file <relative-file-path>]"
+  echo "          [--target-directory <relative-folder-path>]"
+  echo "          [--ignore-existing-files]"
   exit 1
 }
 
@@ -18,42 +24,58 @@ backupPath=""
 ignoreExistingFiles=0
 
 # read options
-while getopts "r:v:c:d:kh" opt
-do
-  case "$opt" in
-    r)
-      if [ -z $command ]; then
-        command="$OPTARG"
-      else
-        echo "CONFLICTING OPTIONS FOR -r"
-        helpFunction
-      fi ;;
-    v)
-      if [ -z $commandValue ]; then
-        commandValue="$OPTARG"
-      else
-        echo "CONFLICTING OPTIONS FOR -v"
-        helpFunction
-      fi ;;
-    c)
-      if [ -z $configFile ]; then
-        configFile="$OPTARG"
-      else
-        echo "CONFLICTING OPTIONS FOR -c"
-        helpFunction
-      fi ;;
-    d)
-      if [ -z $backupPath ]; then
-        backupPath="$OPTARG"
-      else
-        echo "CONFLICTING OPTIONS FOR -d"
-        helpFunction
-      fi ;;
-    k) ignoreExistingFiles=1 ;;
-    h) helpFunction ;;
-    ?) helpFunction ;;
-  esac
-done
+if options="$(getopt -o r:v:c:d:kh -l run:,value:,config-file:,target-directory:,ignore-existing-files,help -- "$@")"; then
+  eval set -- "$options"
+  while true
+  do
+    case "${1,,}" in
+      -r|--run)
+        if [ -z $command ]; then
+          command="$2"
+        else
+          echo "CONFLICTING OPTIONS FOR -r"
+          helpFunction
+        fi
+        shift # skip argument
+        ;;
+      -v|--value)
+        if [ -z $commandValue ]; then
+          commandValue="$2"
+        else
+          echo "CONFLICTING OPTIONS FOR -v"
+          helpFunction
+        fi
+        shift # skip argument
+        ;;
+      -c|--config-file)
+        if [ -z $configFile ]; then
+          configFile="$2"
+        else
+          echo "CONFLICTING OPTIONS FOR -c"
+          helpFunction
+        fi
+        shift # skip argument
+        ;;
+      -d|--target-directory)
+        if [ -z $backupPath ]; then
+          backupPath="$2"
+        else
+          echo "CONFLICTING OPTIONS FOR -d"
+          helpFunction
+        fi
+        shift # skip argument
+        ;;
+      -k|--ignore-existing-files) ignoreExistingFiles=1 ;;
+      -h|--help) helpFunction ;;
+      --)
+        shift
+        break
+        ;;
+      *) helpFunction ;;
+    esac
+    shift
+  done
+fi
 
 # validate options
 if [ -z "$command" ]; then

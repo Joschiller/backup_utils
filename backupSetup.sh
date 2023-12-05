@@ -6,6 +6,10 @@ helpFunction()
   echo "usage: $0 <-i | -c> <file-name>"
   echo "          [-u <0 | 1>]"
   echo "          [-a <relative-folder-path> <-r | -d [-k]>]"
+  echo ""
+  echo "usage: $0 <--init | --configure> <file-name>"
+  echo "          [--set-backup-utils-update <0 | 1>]"
+  echo "          [--add <relative-folder-path> <--repository|--repo | --directory [--ignore-existing-files]>]"
   exit 1
 }
 
@@ -25,68 +29,84 @@ printScript()
 }
 
 # read options
-while getopts "i:c:u:a:rdkh" opt
-do
-  case "$opt" in
-    i)
-      if [ -z $command ]; then
-        command="init"
-        fileName="$OPTARG"
-      else
-        if [ $command == "init" ]; then
-          echo "CONFLICTING OPTIONS FOR -i"
+if options="$(getopt -o i:c:u:a:rdkh -l init:,configure:,set-backup-utils-update:,add:,repository,repo,directory,ignore-existing-files,help -- "$@")"; then
+  eval set -- "$options"
+  while true
+  do
+    case "${1,,}" in
+      -i|--init)
+        if [ -z $command ]; then
+          command="init"
+          fileName="$2"
+        else
+          if [ $command == "init" ]; then
+            echo "CONFLICTING OPTIONS FOR -i"
+          fi
+          if [ $command == "config" ]; then
+            echo "CONFLICTING OPTIONS: -i AND -c"
+          fi
+          helpFunction
         fi
-        if [ $command == "config" ]; then
-          echo "CONFLICTING OPTIONS: -i AND -c"
+        shift # skip argument
+        ;;
+      -c|--configure)
+        if [ -z $command ]; then
+          command="config"
+          fileName="$2"
+        else
+          if [ $command == "init" ]; then
+            echo "CONFLICTING OPTIONS: -i AND -c"
+          fi
+          if [ $command == "config" ]; then
+            echo "CONFLICTING OPTIONS FOR -c"
+          fi
+          helpFunction
         fi
-        helpFunction
-      fi ;;
-    c)
-      if [ -z $command ]; then
-        command="config"
-        fileName="$OPTARG"
-      else
-        if [ $command == "init" ]; then
-          echo "CONFLICTING OPTIONS: -i AND -c"
+        shift # skip argument
+        ;;
+      -u|--set-backup-utils-update)
+        if [ $runUpdate == -1 ]; then
+          runUpdate=$2
+        else
+          echo "CONFLICTING OPTIONS FOR -u"
+          helpFunction
         fi
-        if [ $command == "config" ]; then
-          echo "CONFLICTING OPTIONS FOR -c"
+        shift # skip argument
+        ;;
+      -a|--add)
+        if [ -z $addFolder ]; then
+          addFolder=$2
+        else
+          echo "CONFLICTING OPTIONS FOR -a"
+          helpFunction
         fi
-        helpFunction
-      fi ;;
-    u)
-      if [ $runUpdate == -1 ]; then
-        runUpdate=$OPTARG
-      else
-        echo "CONFLICTING OPTIONS FOR -u"
-        helpFunction
-      fi ;;
-    a)
-      if [ -z $addFolder ]; then
-        addFolder=$OPTARG
-      else
-        echo "CONFLICTING OPTIONS FOR -a"
-        helpFunction
-      fi ;;
-    r)
-      if [ -z $addFolderMode ]; then
-        addFolderMode="repository"
-      else
-        echo "CONFLICTING OPTIONS: -r AND -d"
-        helpFunction
-      fi ;;
-    d)
-      if [ -z $addFolderMode ]; then
-        addFolderMode="directory"
-      else
-        echo "CONFLICTING OPTIONS: -r AND -d"
-        helpFunction
-      fi ;;
-    k) keepExisting=1 ;;
-    h) helpFunction ;;
-    ?) helpFunction ;;
-  esac
-done
+        shift # skip argument
+        ;;
+      -r|--repository|--repo)
+        if [ -z $addFolderMode ]; then
+          addFolderMode="repository"
+        else
+          echo "CONFLICTING OPTIONS: -r AND -d"
+          helpFunction
+        fi ;;
+      -d|--directory)
+        if [ -z $addFolderMode ]; then
+          addFolderMode="directory"
+        else
+          echo "CONFLICTING OPTIONS: -r AND -d"
+          helpFunction
+        fi ;;
+      -k|--ignore-existing-files) keepExisting=1 ;;
+      -h|--help) helpFunction ;;
+      --)
+        shift
+        break
+        ;;
+      *) helpFunction ;;
+    esac
+    shift
+  done
+fi
 
 # validate options
 if [ -z "$command" ]; then
