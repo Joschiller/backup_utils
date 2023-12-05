@@ -151,7 +151,7 @@ backupFiles()
   target=$2
   ignoreExisting=$3
 
-  for item in $source/*
+  for item in "$source"/*
   do
     if [ $(basename "$item") == ".backupable" ]; then
       [[ $silent -eq 0 ]] && echo "- SKIP            : $item"
@@ -228,7 +228,7 @@ if [ "$command" == "backup" ]; then
 
       dotGlobSetting=$(shopt -p | grep dotglob)
       shopt -s dotglob # enable to also copy invisible files
-      backupFiles $line "$fullTargetDirectoryName" $ignoreExistingFiles
+      backupFiles "$line" "$fullTargetDirectoryName" $ignoreExistingFiles
       $dotGlobSetting # set to previous value
       echo "CHECKED FILES: $checked"
       echo "CREATED FILES: $created"
