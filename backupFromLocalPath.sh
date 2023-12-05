@@ -140,6 +140,11 @@ if [ "$command" == "remove" ]; then
   fi
 fi
 
+checked=0
+created=0
+updated=0
+skipped=0
+
 backupFiles()
 {
   source=$1
@@ -150,6 +155,8 @@ backupFiles()
   do
     if [ $(basename "$item") == ".backupable" ]; then
       [[ $silent -eq 0 ]] && echo "- SKIP            : $item"
+      ((checked++))
+      ((skipped++))
     else
       if [[ -f "${target}/$(basename "$item")" || -d "${target}/$(basename "$item")" ]]; then
         if [ -d "$item" ]; then
@@ -158,17 +165,21 @@ backupFiles()
           backupFiles "$item" "${target}/$(basename "$item")" $ignoreExisting
           target=$(dirname "$target") # "up" navigation
         else
+          ((checked++))
           if [ $ignoreExisting == 1 ]; then
             [[ $silent -eq 0 ]] && echo "- SKIP (existing) : $item"
+            ((skipped++))
           else
             if [ "$item" -nt "${target}/$(basename "$item")" ]; then
               # run copy
               [[ $silent -eq 0 ]] && echo "- COPY            : $item"
               if [ -f "$item" ]; then
                 cp "$item" "${target}/$(basename "$item")"
+                ((updated++))
               fi
             else
               [[ $silent -eq 0 ]] && echo "- SKIP (unchanged): $item"
+              ((skipped++))
             fi
           fi
         fi
@@ -177,6 +188,8 @@ backupFiles()
         [[ $silent -eq 0 ]] && echo "- COPY            : $item"
         if [ -f "$item" ]; then
           cp "$item" "${target}/$(basename "$item")"
+          ((checked++))
+          ((created++))
         fi
         if [ -d "$item" ]; then
           mkdir -p "${target}/$(basename "$item")"
@@ -198,6 +211,11 @@ if [ "$command" == "backup" ]; then
       backupableDirectoryName=$(basename "$line")
       fullTargetDirectoryName="${backupPath}/${backupableDirectoryName}"
 
+      checked=0
+      created=0
+      updated=0
+      skipped=0
+
       if [ ! -d "$fullTargetDirectoryName" ]; then
         echo ""
         echo "> CLONING $line to $fullTargetDirectoryName"
@@ -212,6 +230,10 @@ if [ "$command" == "backup" ]; then
       shopt -s dotglob # enable to also copy invisible files
       backupFiles $line "$fullTargetDirectoryName" $ignoreExistingFiles
       $dotGlobSetting # set to previous value
+      echo "CHECKED FILES: $checked"
+      echo "CREATED FILES: $created"
+      echo "UPDATED FILES: $updated"
+      echo "SKIPPED FILES: $skipped"
     else
       echo "MISSING .backupable FILE IN: $line"
       echo "SKIPPING $line"
