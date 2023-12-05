@@ -217,10 +217,8 @@ if [ "$command" == "backup" ]; then
       skipped=0
 
       if [ ! -d "$fullTargetDirectoryName" ]; then
-        echo ""
         echo "> CLONING $line to $fullTargetDirectoryName"
       else
-        echo ""
         echo "> PULLING $line to $fullTargetDirectoryName"
       fi
 
