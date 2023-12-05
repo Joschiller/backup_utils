@@ -7,11 +7,13 @@ helpFunction()
   echo "          [-c <relative-file-path>]"
   echo "          [-d <relative-folder-path>]"
   echo "          [-k]"
+  echo "          [-s]"
   echo ""
   echo "usage: $0 --run <backup | add | remove> [--value <absolute-folder-path>]"
   echo "          [--config-file <relative-file-path>]"
   echo "          [--target-directory <relative-folder-path>]"
   echo "          [--ignore-existing-files]"
+  echo "          [--silent]"
   exit 1
 }
 
@@ -22,9 +24,10 @@ commandValue=""
 configFile=""
 backupPath=""
 ignoreExistingFiles=0
+silent=0
 
 # read options
-if options="$(getopt -o r:v:c:d:kh -l run:,value:,config-file:,target-directory:,ignore-existing-files,help -- "$@")"; then
+if options="$(getopt -o r:v:c:d:ksh -l run:,value:,config-file:,target-directory:,ignore-existing-files,silent,help -- "$@")"; then
   eval set -- "$options"
   while true
   do
@@ -66,6 +69,7 @@ if options="$(getopt -o r:v:c:d:kh -l run:,value:,config-file:,target-directory:
         shift # skip argument
         ;;
       -k|--ignore-existing-files) ignoreExistingFiles=1 ;;
+      -s|--silent) silent=1 ;;
       -h|--help) helpFunction ;;
       --)
         shift
@@ -145,7 +149,7 @@ backupFiles()
   for item in $source/*
   do
     if [ $(basename "$item") == ".backupable" ]; then
-      echo "- SKIP            : $item"
+      [[ $silent -eq 0 ]] && echo "- SKIP            : $item"
     else
       if [[ -f "${target}/$(basename "$item")" || -d "${target}/$(basename "$item")" ]]; then
         if [ -d "$item" ]; then
@@ -155,22 +159,22 @@ backupFiles()
           target=$(dirname "$target") # "up" navigation
         else
           if [ $ignoreExisting == 1 ]; then
-            echo "- SKIP (existing) : $item"
+            [[ $silent -eq 0 ]] && echo "- SKIP (existing) : $item"
           else
             if [ "$item" -nt "${target}/$(basename "$item")" ]; then
               # run copy
-              echo "- COPY            : $item"
+              [[ $silent -eq 0 ]] && echo "- COPY            : $item"
               if [ -f "$item" ]; then
                 cp "$item" "${target}/$(basename "$item")"
               fi
             else
-              echo "- SKIP (unchanged): $item"
+              [[ $silent -eq 0 ]] && echo "- SKIP (unchanged): $item"
             fi
           fi
         fi
       else
         # run copy
-        echo "- COPY            : $item"
+        [[ $silent -eq 0 ]] && echo "- COPY            : $item"
         if [ -f "$item" ]; then
           cp "$item" "${target}/$(basename "$item")"
         fi

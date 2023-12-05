@@ -5,11 +5,11 @@ helpFunction()
   echo ""
   echo "usage: $0 <-i | -c> <file-name>"
   echo "          [-u <0 | 1>]"
-  echo "          [-a <relative-folder-path> <-r | -d [-k]>]"
+  echo "          [-a <relative-folder-path> <-r | -d [-k][-s]>]"
   echo ""
   echo "usage: $0 <--init | --configure> <file-name>"
   echo "          [--set-backup-utils-update <0 | 1>]"
-  echo "          [--add <relative-folder-path> <--repository|--repo | --directory [--ignore-existing-files]>]"
+  echo "          [--add <relative-folder-path> <--repository|--repo | --directory [--ignore-existing-files][--silent]>]"
   exit 1
 }
 
@@ -21,6 +21,7 @@ runUpdate=-1
 addFolder=""
 addFolderMode=""
 keepExisting=0
+silent=0
 
 printScript()
 {
@@ -29,7 +30,7 @@ printScript()
 }
 
 # read options
-if options="$(getopt -o i:c:u:a:rdkh -l init:,configure:,set-backup-utils-update:,add:,repository,repo,directory,ignore-existing-files,help -- "$@")"; then
+if options="$(getopt -o i:c:u:a:rdksh -l init:,configure:,set-backup-utils-update:,add:,repository,repo,directory,ignore-existing-files,silent,help -- "$@")"; then
   eval set -- "$options"
   while true
   do
@@ -97,6 +98,7 @@ if options="$(getopt -o i:c:u:a:rdkh -l init:,configure:,set-backup-utils-update
           helpFunction
         fi ;;
       -k|--ignore-existing-files) keepExisting=1 ;;
+      -s|--silent) silent=1 ;;
       -h|--help) helpFunction ;;
       --)
         shift
@@ -176,33 +178,28 @@ if [ $command == "config" ]; then
   fi
 
   if [[ ! -z $addFolder ]]; then
-    configLineRepository="./backup_utils/backupRepositories.sh -r backup -c ${addFolder}/backup.config -d ${addFolder}"
-    configLineDirectory="./backup_utils/backupFromLocalPath.sh -r backup -c ${addFolder}/backup.config -d ${addFolder}"
-    configLineDirectoryKeepExisting="./backup_utils/backupFromLocalPath.sh -r backup -c ${addFolder}/backup.config -d ${addFolder} -k"
-
     added=0
-    if ! grep -q -F "$configLineRepository" "$fileName"; then
-      if ! grep -q -F "$configLineDirectory" "$fileName"; then
-        if ! grep -q -F "$configLineDirectoryKeepExisting" "$fileName"; then
-          added=1
-          echo "ADDING $addFolder"
-          if [[ "$addFolderMode" == "repository" ]]; then
-            echo "$configLineRepository" >> "$fileName"
-          fi
-          if [[ "$addFolderMode" == "directory" ]]; then
-            if [[ $keepExisting == 1 ]]; then
-              echo "$configLineDirectoryKeepExisting" >> "$fileName"
-            else
-              echo "$configLineDirectory" >> "$fileName"
-            fi
-          fi
-          mkdir -p "$addFolder"
-          if [ ! -f "${addFolder}/backup.config" ]; then
-            cd "$addFolder"
-            touch "backup.config"
-            cd $basePath
-          fi
+    if ! grep -q -F "${addFolder}/backup.config -d ${addFolder}" "$fileName"; then
+      added=1
+      echo "ADDING $addFolder"
+      if [[ "$addFolderMode" == "repository" ]]; then
+        echo "./backup_utils/backupRepositories.sh -r backup -c ${addFolder}/backup.config -d ${addFolder}" >> "$fileName"
+      fi
+      if [[ "$addFolderMode" == "directory" ]]; then
+        directoryConfig="./backup_utils/backupFromLocalPath.sh -r backup -c ${addFolder}/backup.config -d ${addFolder}"
+        if [[ $keepExisting == 1 ]]; then
+          directoryConfig="$directoryConfig -k"
         fi
+        if [[ $silent == 1 ]]; then
+          directoryConfig="$directoryConfig -s"
+        fi
+        echo "$directoryConfig" >> "$fileName"
+      fi
+      mkdir -p "$addFolder"
+      if [ ! -f "${addFolder}/backup.config" ]; then
+        cd "$addFolder"
+        touch "backup.config"
+        cd $basePath
       fi
     fi
     if [ $added == 0 ]; then
