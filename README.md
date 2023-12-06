@@ -85,6 +85,8 @@ The script can be run with the following commands and options:
 | `-k`<br/>`--ignore-existing-files`                                          | keep existing files in the backup without overwriting them with newly copied files, even if their last modified timestamp is newer than the existing file - by default, the old backup will completely be overwritten with the new values |
 | `-s`<br/>`--silent`                                                         | skip all status messages for individual files                                                                                                                                                                                             |
 
+**All paths will be converted to absolute paths as the backup is intended to be located on a different drive than the original files!**
+
 ## Example Setup for These Scripts
 
 In the following example, a directory structure is given, where the backups should be stored as follows:

@@ -111,30 +111,31 @@ echo "config file:      $configFile"
 echo "target directory: $backupPath"
 
 if [ "$command" == "add" ]; then
-  if grep -q "$commandValue" "$configFile"; then
-    echo "$configFile already contains $commandValue"
+  absoluteFolder="/$(realpath --relative-base="/" "$commandValue")" # convert all folders to absolute folders
+  # TODO: convert relative path to absolute and check for the abolute path too (or the other way round)
+  if grep -q "$absoluteFolder" "$configFile"; then
+    echo "$configFile already contains $absoluteFolder"
     echo "==========     CONFIG      =========="
     cat "$configFile"
   else
-    echo "ADDING $commandValue TO $configFile"
-    echo "$commandValue" >> "$configFile"
-    echo "MARKING $commandValue AS BACKUPABLE"
-    cd "$commandValue"
-    touch .backupable
-    cd "$basePath"
+    echo "ADDING $absoluteFolder TO $configFile"
+    echo "$absoluteFolder" >> "$configFile"
+    echo "MARKING $absoluteFolder AS BACKUPABLE"
+    touch "${absoluteFolder}/.backupable"
     echo "==========   NEW CONFIG    =========="
     cat "$configFile"
   fi
 fi
 if [ "$command" == "remove" ]; then
-  if grep -q "$commandValue" "$configFile"; then
-    echo "REMOVING $commandValue FROM $configFile"
-    grep -v -xF -e "$commandValue" "$configFile" > "${configFile}.tmp"
+  absoluteFolder="/$(realpath --relative-base="/" "$commandValue")" # convert all folders to absolute folders
+  if grep -q "$absoluteFolder" "$configFile"; then
+    echo "REMOVING $absoluteFolder FROM $configFile"
+    grep -v -xF -e "$absoluteFolder" "$configFile" > "${configFile}.tmp"
     mv "${configFile}.tmp" "$configFile"
     echo "==========   NEW CONFIG    =========="
     cat "$configFile"
   else
-    echo "$configFile does not contain $commandValue"
+    echo "$configFile does not contain $absoluteFolder"
     echo "==========     CONFIG      =========="
     cat "$configFile"
   fi
@@ -207,8 +208,9 @@ if [ "$command" == "backup" ]; then
   echo "========== RUNNING BACKUP  =========="
   while IFS= read -r line
   do
-    if [ -f "${line}/.backupable" ]; then
-      backupableDirectoryName=$(basename "$line")
+    absoluteFolder="/$(realpath --relative-base="/" "$line")" # convert all folders to absolute folders
+    if [ -f "${absoluteFolder}/.backupable" ]; then
+      backupableDirectoryName=$(basename "$absoluteFolder")
       fullTargetDirectoryName="${backupPath}/${backupableDirectoryName}"
 
       checked=0
@@ -217,24 +219,24 @@ if [ "$command" == "backup" ]; then
       skipped=0
 
       if [ ! -d "$fullTargetDirectoryName" ]; then
-        echo "> CLONING $line to $fullTargetDirectoryName"
+        echo "> CLONING $absoluteFolder to $fullTargetDirectoryName"
       else
-        echo "> PULLING $line to $fullTargetDirectoryName"
+        echo "> PULLING $absoluteFolder to $fullTargetDirectoryName"
       fi
 
       mkdir -p "$fullTargetDirectoryName"
 
       dotGlobSetting=$(shopt -p | grep dotglob)
       shopt -s dotglob # enable to also copy invisible files
-      backupFiles "$line" "$fullTargetDirectoryName" $ignoreExistingFiles
+      backupFiles "$absoluteFolder" "$fullTargetDirectoryName" $ignoreExistingFiles
       $dotGlobSetting # set to previous value
       echo "CHECKED FILES: $checked"
       echo "CREATED FILES: $created"
       echo "UPDATED FILES: $updated"
       echo "SKIPPED FILES: $skipped"
     else
-      echo "MISSING .backupable FILE IN: $line"
-      echo "SKIPPING $line"
+      echo "MISSING .backupable FILE IN: $absoluteFolder"
+      echo "SKIPPING $absoluteFolder"
     fi
   done < "$configFile"
   echo "========== BACKUP FINISHED =========="
