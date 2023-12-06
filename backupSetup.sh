@@ -178,15 +178,16 @@ if [ $command == "config" ]; then
   fi
 
   if [[ ! -z $addFolder ]]; then
+    relativeFolder="./$(realpath --relative-to="./" "$addFolder")" # convert all folders to relative folders
     added=0
-    if ! grep -q -F "${addFolder}/backup.config -d ${addFolder}" "$fileName"; then
+    if ! grep -q -F "${relativeFolder}/backup.config -d ${relativeFolder}" "$fileName"; then
       added=1
-      echo "ADDING $addFolder"
+      echo "ADDING $relativeFolder"
       if [[ "$addFolderMode" == "repository" ]]; then
-        echo "./backup_utils/backupRepositories.sh -r backup -c ${addFolder}/backup.config -d ${addFolder}" >> "$fileName"
+        echo "./backup_utils/backupRepositories.sh -r backup -c ${relativeFolder}/backup.config -d ${relativeFolder}" >> "$fileName"
       fi
       if [[ "$addFolderMode" == "directory" ]]; then
-        directoryConfig="./backup_utils/backupFromLocalPath.sh -r backup -c ${addFolder}/backup.config -d ${addFolder}"
+        directoryConfig="./backup_utils/backupFromLocalPath.sh -r backup -c ${relativeFolder}/backup.config -d ${relativeFolder}"
         if [[ $keepExisting == 1 ]]; then
           directoryConfig="$directoryConfig -k"
         fi
@@ -195,15 +196,13 @@ if [ $command == "config" ]; then
         fi
         echo "$directoryConfig" >> "$fileName"
       fi
-      mkdir -p "$addFolder"
-      if [ ! -f "${addFolder}/backup.config" ]; then
-        cd "$addFolder"
-        touch "backup.config"
-        cd $basePath
+      mkdir -p "$relativeFolder"
+      if [ ! -f "${relativeFolder}/backup.config" ]; then
+        touch "${relativeFolder}/backup.config"
       fi
     fi
     if [ $added == 0 ]; then
-      echo "$fileName ALREADY CONTAINS $addFolder"
+      echo "$fileName ALREADY CONTAINS $relativeFolder"
     fi
   fi
 

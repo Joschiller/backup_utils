@@ -27,6 +27,8 @@ The script can be run with the following options:
 | `-k`<br/>`--ignore-existing-files`                             | the newly added folder will be setup in such a way that existing files will never be overwritten by new changes to the source folder of the backup                            |
 | `-s`<br/>`--silent`                                            | the newly added folder will be setup in such a way that status messages for individual files will be skipped                                                                  |
 
+**All paths will be converted to relative paths within the configuration file as the backup is intended to be stored relative to the generated backup script!**
+
 > After configuring the backup script, the backup can be run by simply executing the script.
 
 ## `./backupRepositories.sh`
