@@ -234,6 +234,9 @@ if [ "$command" == "backup" ]; then
       echo "CREATED FILES: $created"
       echo "UPDATED FILES: $updated"
       echo "SKIPPED FILES: $skipped"
+
+      absoluteTargetDirectoryName="/$(realpath --relative-base="/" "$fullTargetDirectoryName")"
+      echo "$(date +"%Y-%m-%d %T"): backed up $(($created + $updated)) file(s) to $absoluteTargetDirectoryName" >> "${absoluteFolder}/.backupable"
     else
       echo "MISSING .backupable FILE IN: $absoluteFolder"
       echo "SKIPPING $absoluteFolder"

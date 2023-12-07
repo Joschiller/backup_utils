@@ -62,7 +62,7 @@ The script can be run with the following commands and options:
 
 This script runs the backup for local files given in a `.config` file by copying them to a local location. By default, a config file with the name `backupFromLocalPath.config` will be used that is contained in the current working directory. The backup folders will also be put in the same folder.
 
-The config file must contain a list of directory paths that will be copied. The other directory, that should be backed up, must contain a file named `.backupable`.
+The config file must contain a list of directory paths that will be copied. The other directory, that should be backed up, must contain a file named `.backupable`. Within this file, the script will document the last performed backup.
 
 > Be aware, that, if a folder with the same name already exists in the backup target location, its contents will be discarded and replaced with the newly copied contents. Meaning: folder names cannot occur several times within the same target backup folder!
 
