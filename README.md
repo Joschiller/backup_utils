@@ -25,7 +25,7 @@ The script can be run with the following options:
 | `-r`<br/>`--repository`<br/>`--repo`                           | the newly added folder will be setup as a backup folder for repositories                                                                                                      |
 | `-d`<br/>`--directory`                                         | the newly added folder will be setup as a backup folder for local directories - accepts the further options `-k` and `-s`                                                     |
 | `-k`<br/>`--ignore-existing-files`                             | the newly added folder will be setup in such a way that existing files will never be overwritten by new changes to the source folder of the backup                            |
-| `-s`<br/>`--silent`                                            | the newly added folder will be setup in such a way that status messages for individual files will be skipped                                                                  |
+| `-s`<br/>`--silent`                                            | the newly added folder will be setup in such a way that status messages for individual files will be skipped (instead only subfolders will be announced)                      |
 
 **All paths will be converted to relative paths within the configuration file as the backup is intended to be stored relative to the generated backup script!**
 
@@ -83,7 +83,7 @@ The script can be run with the following commands and options:
 | `-c <relative-file-path>`<br/>`--config-file <relative-file-path>`          | overhand a different config file relative to the current working directory                                                                                                                                                                |
 | `-d <relative-folder-path>`<br/>`--target-directory <relative-folder-path>` | overhand a different target backup folder relative to the current working directory                                                                                                                                                       |
 | `-k`<br/>`--ignore-existing-files`                                          | keep existing files in the backup without overwriting them with newly copied files, even if their last modified timestamp is newer than the existing file - by default, the old backup will completely be overwritten with the new values |
-| `-s`<br/>`--silent`                                                         | skip all status messages for individual files                                                                                                                                                                                             |
+| `-s`<br/>`--silent`                                                         | skip all status messages for individual files (instead only subfolders will be announced)                                                                                                                                                 |
 
 **All paths will be converted to absolute paths as the backup is intended to be located on a different drive than the original files!**
 

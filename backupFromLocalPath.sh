@@ -162,9 +162,13 @@ backupFiles()
       if [[ -f "${target}/$(basename "$item")" || -d "${target}/$(basename "$item")" ]]; then
         if [ -d "$item" ]; then
           # start recursive check
+          [[ $silent -eq 1 ]] && echo "- CHECKING "$item""
           mkdir -p "${target}/$(basename "$item")"
           backupFiles "$item" "${target}/$(basename "$item")" $ignoreExisting
-          target=$(dirname "$target") # "up" navigation
+          # "up" navigation
+          target=$(dirname "$target")
+          source=$(dirname "$source")
+          [[ $silent -eq 1 ]] && echo "- CHECKING $source"
         else
           ((checked++))
           if [ $ignoreExisting == 1 ]; then
@@ -193,9 +197,14 @@ backupFiles()
           ((created++))
         fi
         if [ -d "$item" ]; then
+          # start recursive backup
+          [[ $silent -eq 1 ]] && echo "- CHECKING "$item""
           mkdir -p "${target}/$(basename "$item")"
           backupFiles "$item" "${target}/$(basename "$item")" $ignoreExisting
-          target=$(dirname "$target") # "up" navigation
+          # "up" navigation
+          target=$(dirname "$target")
+          source=$(dirname "$source")
+          [[ $silent -eq 1 ]] && echo "- CHECKING $source"
         fi
       fi
     fi
