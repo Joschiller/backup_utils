@@ -178,7 +178,7 @@ if [ $command == "config" ]; then
   fi
 
   if [[ ! -z $addFolder ]]; then
-    relativeFolder="./$(realpath --relative-to="./" "$addFolder")" # convert all folders to relative folders
+    relativeFolder="./$(realpath --relative-to="./" "$addFolder" --canonicalize-missing)" # convert all folders to relative folders
     added=0
     if ! grep -q -F "${relativeFolder}/backup.config -d ${relativeFolder}" "$fileName"; then
       added=1

@@ -111,7 +111,7 @@ echo "config file:      $configFile"
 echo "target directory: $backupPath"
 
 if [ "$command" == "add" ]; then
-  absoluteFolder="/$(realpath --relative-base="/" "$commandValue")" # convert all folders to absolute folders
+  absoluteFolder="/$(realpath --relative-base="/" "$commandValue" --canonicalize-missing)" # convert all folders to absolute folders
   # TODO: convert relative path to absolute and check for the abolute path too (or the other way round)
   if grep -q "$absoluteFolder" "$configFile"; then
     echo "$configFile already contains $absoluteFolder"
@@ -127,7 +127,7 @@ if [ "$command" == "add" ]; then
   fi
 fi
 if [ "$command" == "remove" ]; then
-  absoluteFolder="/$(realpath --relative-base="/" "$commandValue")" # convert all folders to absolute folders
+  absoluteFolder="/$(realpath --relative-base="/" "$commandValue" --canonicalize-missing)" # convert all folders to absolute folders
   if grep -q "$absoluteFolder" "$configFile"; then
     echo "REMOVING $absoluteFolder FROM $configFile"
     grep -v -xF -e "$absoluteFolder" "$configFile" > "${configFile}.tmp"
@@ -217,7 +217,7 @@ if [ "$command" == "backup" ]; then
   echo "========== RUNNING BACKUP  =========="
   while IFS= read -r line
   do
-    absoluteFolder="/$(realpath --relative-base="/" "$line")" # convert all folders to absolute folders
+    absoluteFolder="/$(realpath --relative-base="/" "$line" --canonicalize-missing)" # convert all folders to absolute folders
     if [ -f "${absoluteFolder}/.backupable" ]; then
       backupableDirectoryName=$(basename "$absoluteFolder")
       fullTargetDirectoryName="${backupPath}/${backupableDirectoryName}"
@@ -244,7 +244,7 @@ if [ "$command" == "backup" ]; then
       echo "UPDATED FILES: $updated"
       echo "SKIPPED FILES: $skipped"
 
-      absoluteTargetDirectoryName="/$(realpath --relative-base="/" "$fullTargetDirectoryName")"
+      absoluteTargetDirectoryName="/$(realpath --relative-base="/" "$fullTargetDirectoryName" --canonicalize-missing)" # convert all folders to absolute folders
       echo "$(date +"%Y-%m-%d %T"): backed up $(($created + $updated)) file(s) to $absoluteTargetDirectoryName" >> "${absoluteFolder}/.backupable"
     else
       echo "MISSING .backupable FILE IN: $absoluteFolder"
