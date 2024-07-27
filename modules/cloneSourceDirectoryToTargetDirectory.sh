@@ -33,7 +33,7 @@ backupFiles()
 
   for item in "$source"/*
   do
-    if [ $(basename "$item") == ".backupable" ]; then
+    if [[ $(basename "$item") == ".backupable" ]]; then
       [[ $silent -eq 0 ]] && echo "- SKIP            : $item"
       ((checked++))
       ((skipped++))
