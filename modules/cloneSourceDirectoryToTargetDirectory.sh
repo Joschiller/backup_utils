@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# NOTE: This script is a sub module of "backupFromLocalPath.sh" and not intended to be called manually.
+# NOTE: This script is a sub module of "backupFromLocalPath.sh" and "partialBackupFromExternalDrive.sh" and is not intended to be called manually.
 # Parameters:
 # 1: absoluteFolder
 #    - source directory

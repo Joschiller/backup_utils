@@ -87,6 +87,29 @@ The script can be run with the following commands and options:
 
 **All paths will be converted to absolute paths as the backup is intended to be located on a different drive than the original files!**
 
+## `./templates/partialBackupFromExternalDrive.sh`
+
+When plugging in an external drive, the path of the drive may differ from time to time. To be able to perform an automated backup of files stored on such an external drive, this template script can be adapted. The script splits the backup in several parts that can be run independently from each other (e.g., to just run certain backups at a time and not a full backup in each run to save time).
+
+The sections of the script that must be customized are highlighted and explained with "TODO" comments:
+
+- A map of backup options must be provided. Each backup options customizes a source and target path and may customize settings for ignoring existing files or ignoring progress output during the backup.
+- A documentation of the configured backup options is advised in the `helpFunction` of the template.
+- The path of the `backup_utils` may need to be customized.
+
+Each of the source directories must contain a `.backupable`-file. Within this file, the script will document the last performed backup.
+
+> Be aware, that, if a folder with the same name already exists in the backup target location, its contents will be discarded and replaced with the newly copied contents. Meaning: folder names cannot occur several times within the same target backup folder!
+
+After setting up the script it can be run with the following options:
+
+> `./partialBackupFromExternalDrive.sh -b <backup-option> -d <source-drive>`
+
+| Option                                              | Explanation                                                              |
+| :-------------------------------------------------- | :----------------------------------------------------------------------- |
+| `-b <backup-option>`<br/>`--backup <backup-option>` | overhand one of the configured backup options                            |
+| `-d <source-drive>`<br/>`--drive <source-drive>`    | overhand the base path of the currently plugged in external source drive |
+
 ## Example Setup for These Scripts
 
 In the following example, a directory structure is given, where the backups should be stored as follows:
