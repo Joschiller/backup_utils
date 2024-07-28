@@ -74,7 +74,7 @@ if [ -z "$sourceDrive" ]; then
   helpFunction
 fi
 
-# cleanup sourceDrive
+# cleanup paths
 
 if [[ ! "$sourceDrive" == */ ]]; then
   sourceDrive="${sourceDrive}/"
@@ -82,6 +82,10 @@ fi
 
 if [[ ! "$sourceDrive" == /* ]]; then
   sourceDrive="/${sourceDrive}"
+fi
+
+if [[ ! "$subFolder" == /* && ! -z "$subFolder" ]]; then
+  subFolder="/${subFolder}"
 fi
 
 # map parameters
@@ -128,6 +132,15 @@ fi
 
 if [ ! -f "${completeSourcePath}/.backupable" ]; then
   echo "MISSING .backupable FILE IN: $completeSourcePath"
+  exit 1
+fi
+
+if [[ ! -z "$subFolder" && ! -d "$completeSourcePath$subFolder" ]]; then
+  echo "The subfolder $subFolder does not exist in $completeSourcePath"
+  echo ""
+  echo "Available folders:"
+  cd "$completeSourcePath"
+  ls -ld */
   exit 1
 fi
 
