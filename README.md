@@ -103,12 +103,13 @@ Each of the source directories must contain a `.backupable`-file. Within this fi
 
 After setting up the script it can be run with the following options:
 
-> `./partialBackupFromExternalDrive.sh -b <backup-option> -d <source-drive>`
+> `./partialBackupFromExternalDrive.sh -b <backup-option> -d <source-drive> [-s <subfolder>]`
 
-| Option                                              | Explanation                                                              |
-| :-------------------------------------------------- | :----------------------------------------------------------------------- |
-| `-b <backup-option>`<br/>`--backup <backup-option>` | overhand one of the configured backup options                            |
-| `-d <source-drive>`<br/>`--drive <source-drive>`    | overhand the base path of the currently plugged in external source drive |
+| Option                                              | Explanation                                                                                   |
+| :-------------------------------------------------- | :-------------------------------------------------------------------------------------------- |
+| `-b <backup-option>`<br/>`--backup <backup-option>` | overhand one of the configured backup options                                                 |
+| `-d <source-drive>`<br/>`--drive <source-drive>`    | overhand the base path of the currently plugged in external source drive                      |
+| `-s <subfolder>`<br/>`--subfolder <subfolder>`      | overhand a subfolder to only backup files within this subfolder of the selected backup option |
 
 ## Example Setup for These Scripts
 

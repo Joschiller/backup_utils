@@ -3,9 +3,9 @@
 helpFunction()
 {
   echo ""
-  echo "usage: $0 -b <backup-option> -d <source-drive>"
+  echo "usage: $0 -b <backup-option> -d <source-drive> [-s <subfolder>]"
   echo ""
-  echo "usage: $0 --backup <backup-option> --drive <source-drive>"
+  echo "usage: $0 --backup <backup-option> --drive <source-drive> [--subfolder <subfolder>]"
   echo ""
   echo "Available backup options:"
   echo "- ... TODO: list your backup options here - e.g.: ..."
@@ -17,9 +17,10 @@ helpFunction()
 basePath="$(pwd)"
 backupOption=""
 sourceDrive=""
+subFolder=""
 
 # read options
-if options="$(getopt -o b:d:h -l backup:,drive:,help -- "$@")"; then
+if options="$(getopt -o b:d:s:h -l backup:,drive:,subfolder:,help -- "$@")"; then
   eval set -- "$options"
   while true
   do
@@ -38,6 +39,15 @@ if options="$(getopt -o b:d:h -l backup:,drive:,help -- "$@")"; then
           sourceDrive="$2"
         else
           echo "CONFLICTING OPTIONS for -d"
+          helpFunction
+        fi
+        shift # skip argument
+        ;;
+      -s|--subfolder)
+        if [ -z $subFolder ]; then
+          subFolder="$2"
+        else
+          echo "CONFLICTING OPTIONS for -s"
           helpFunction
         fi
         shift # skip argument
@@ -124,6 +134,6 @@ fi
 # run the script
 
 # TODO: use the correct path of the backup_utils - this example asserts, that a current version of the backup utils is located right next to this script
-./backup_utils/modules/cloneSourceDirectoryToTargetDirectory.sh "$completeSourcePath" "$completeTargetPath" $ignoreExistingFiles $silent
+./backup_utils/modules/cloneSourceDirectoryToTargetDirectory.sh "$completeSourcePath" "$completeTargetPath" $ignoreExistingFiles $silent "$subFolder"
 
 echo "==========  BACKUP FINISHED  =========="

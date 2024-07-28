@@ -10,6 +10,7 @@
 #    - whether existing files should not be overwritten even if they contain new changes
 # 4: silent
 #    - whether no progress statements should be shown
+# -s: optional subFolder parameter
 
 # map parameters
 
@@ -17,6 +18,11 @@ absoluteFolder="$1"
 fullTargetDirectoryName="$2"
 ignoreExistingFiles=$3
 silent=$4
+subFolder="$5" # optional
+
+if [[ ! "$subFolder" == /* && ! -z "$subFolder" ]]; then
+  subFolder="/${subFolder}"
+fi
 
 # init counters
 
@@ -93,16 +99,19 @@ backupFiles()
 # run script
 
 if [ ! -d "$fullTargetDirectoryName" ]; then
-  echo "> CLONING $absoluteFolder to $fullTargetDirectoryName"
+  echo "> CLONING $absoluteFolder$subFolder to $fullTargetDirectoryName$subFolder"
 else
-  echo "> PULLING $absoluteFolder to $fullTargetDirectoryName"
+  echo "> PULLING $absoluteFolder$subFolder to $fullTargetDirectoryName$subFolder"
 fi
 
 mkdir -p "$fullTargetDirectoryName"
 
 dotGlobSetting=$(shopt -p | grep dotglob)
 shopt -s dotglob # enable to also copy invisible files
-backupFiles "$absoluteFolder" "$fullTargetDirectoryName" $ignoreExistingFiles
+if [ ! -z "$subFolder" ]; then
+  mkdir -p "$fullTargetDirectoryName$subFolder"
+fi
+backupFiles "$absoluteFolder$subFolder" "$fullTargetDirectoryName$subFolder" $ignoreExistingFiles
 $dotGlobSetting # set to previous value
 echo "CHECKED FILES: $checked"
 echo "CREATED FILES: $created"
